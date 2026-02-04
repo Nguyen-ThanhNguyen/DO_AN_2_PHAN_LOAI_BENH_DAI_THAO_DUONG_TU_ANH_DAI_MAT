@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chẩn đoán Bệnh Võng Mạc ĐTĐ (AI Hybrid)</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hệ thống Chẩn đoán DR Tự động</h1>
+
+      <div class="upload-section">
+        <input type="file" id="imageInput" accept="image/*" />
+        <button onclick="uploadImage()">Chẩn đoán ngay</button>
+      </div>
+
+      <div class="result-section" id="resultArea" style="display: none">
+        <div class="images-container">
+          <img id="previewImg" src="" alt="Ảnh gốc" width="300" />
+        </div>
+
+        <div class="info-box">
+          <h2>Kết quả: <span id="lblResult" style="color: blue">...</span></h2>
+          <p>Độ bất định (Uncertainty): <span id="lblUncertainty">...</span></p>
+
+          <div id="warningBox" class="warning" style="display: none">
+            ⚠️ CẢNH BÁO: Ảnh mờ hoặc không rõ ràng. Kết quả có thể không chính
+            xác!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>

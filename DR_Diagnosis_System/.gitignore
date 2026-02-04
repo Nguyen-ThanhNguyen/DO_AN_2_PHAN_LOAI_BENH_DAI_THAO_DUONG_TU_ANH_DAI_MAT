@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Runtime uploads
+backend/uploads/
+
+# Model artifacts (usually large / regenerated)
+backend/models/*.h5
+backend/models/*.pkl
+
+# OS / editor
+.DS_Store
+.vscode/
