@@ -85,8 +85,8 @@ Dự án được thiết kế để chạy cục bộ (Localhost). Hãy làm th
 ### 1. Clone dự án & Chuẩn bị môi trường
 
 ```bash
-git clone [https://github.com/username/project-name.git](https://github.com/username/project-name.git)
-cd project-name/backend
+git clone https://github.com/Nguyen-ThanhNguyen/DO_AN_2_PHAN_LOAI_BENH_DAI_THAO_DUONG_TU_ANH_DAI_MAT.git
+cd DR_Diagnosis_System/backend
 
 ```
 
