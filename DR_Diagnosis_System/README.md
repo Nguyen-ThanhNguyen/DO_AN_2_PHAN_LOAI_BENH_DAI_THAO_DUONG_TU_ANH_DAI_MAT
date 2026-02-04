@@ -1,11 +1,3 @@
-Chào bạn, tôi đã đọc kỹ file `README.md` mẫu từ repo **ExpenseManagement** mà bạn cung cấp. Đó là một mẫu rất chuyên nghiệp, sử dụng Markdown tốt, có Badge đẹp và cấu trúc rõ ràng.
-
-Dưới đây là phiên bản `README.md` được tôi viết lại hoàn toàn cho dự án **"Phân loại bệnh võng mạc đái tháo đường"** của bạn, giữ nguyên phong cách (style), cấu trúc và độ chuyên nghiệp của file mẫu, nhưng thay thế bằng nội dung kỹ thuật (CNN-SVD-GP, Flask, HTML/JS) của dự án bạn.
-
-Bạn hãy copy toàn bộ nội dung trong khung code bên dưới và lưu vào file `README.md` nhé.
-
----
-
 ````markdown
 # 👁️ Hệ Thống Chẩn Đoán Bệnh Võng Mạc Đái Tháo Đường (DR Diagnosis System)
 
