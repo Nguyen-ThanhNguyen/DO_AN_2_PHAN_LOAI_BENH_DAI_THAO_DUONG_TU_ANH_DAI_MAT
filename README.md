@@ -1,116 +1,346 @@
-# HỆ THỐNG HỖ TRỢ CHẨN ĐOÁN VÀ PHÂN LOẠI BỆNH VÕNG MẠC ĐÁI THÁO ĐƯỜNG TỪ ẢNH ĐÁY MẮT (AI)
+# 👁️ DR Diagnosis System — Hệ Thống Chẩn Đoán Võng Mạc Đái Tháo Đường (DR)
 
-> **Dự án Nghiên cứu & Phát triển:** Ứng dụng mạng Nơ-ron Tích chập Sâu (DenseNet-121) kết hợp kỹ thuật sinh dữ liệu Mixup và tối ưu hóa ngưỡng phân loại để chẩn đoán 5 cấp độ bệnh võng mạc đái tháo đường trên bộ dữ liệu APTOS 2019.
+Hệ thống hỗ trợ chẩn đoán và **phân loại 5 mức độ bệnh võng mạc đái tháo đường (Diabetic Retinopathy — DR)** từ ảnh đáy mắt (fundus) bằng học sâu. Ứng dụng chạy **cục bộ (localhost)**, cho phép tải ảnh và nhận kết quả dự đoán kèm xác suất 5 lớp và chỉ số độ bất định.
 
-![Kaggle Kernel](https://img.shields.io/badge/Platform-Kaggle%20Kernels-blue?style=for-the-badge&logo=kaggle)
-![Framework](https://img.shields.io/badge/Deep%20Learning-TensorFlow%20%2F%20Keras-orange?style=for-the-badge&logo=tensorflow)
-![Dataset](https://img.shields.io/badge/Dataset-APTOS%202019%20Blindness-green?style=for-the-badge)
-![Architecture](https://img.shields.io/badge/Model-DenseNet--121-red?style=for-the-badge&logo=keras)
+> ⚕️ **Tuyên bố từ chối trách nhiệm**: Dự án chỉ phục vụ **học thuật / hỗ trợ tham khảo**, không thay thế chẩn đoán của bác sĩ chuyên khoa.
 
----
-
-## 📑 MỤC LỤC (TABLE OF CONTENTS)
-1.  Báo cáo Tiến độ & Lộ trình (Progress & Roadmap)
-2.  Giới thiệu & Tổng quan (Introduction)
-3.  Phương pháp Nghiên cứu (Research Methodology)
-4.  So sánh với các Nghiên cứu trước (Comparison)
+![Python](https://img.shields.io/badge/Python-3.10%2F3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-API%20%2B%20Static-000000?style=for-the-badge&logo=flask&logoColor=white)
+![TensorFlow](<https://img.shields.io/badge/TensorFlow-Keras%20(.h5)-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white>)
+![OpenCV](https://img.shields.io/badge/OpenCV-opencv--python--headless-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)
+![Port](https://img.shields.io/badge/Port-7860-blue?style=for-the-badge)
 
 ---
 
-## 1. BÁO CÁO TIẾN ĐỘ & LỘ TRÌNH (PROGRESS & ROADMAP)
+## 📌 Thư mục chạy chính
 
-### 🟢 Giai đoạn 1: Khám phá & Tiền xử lý dữ liệu
-**Trạng thái:** ✅ Đã hoàn thành (Done)
-- [x] Khám phá phân phối nhãn dữ liệu từ tập CSV của APTOS 2019.
-- [x] Resize toàn bộ ảnh huấn luyện và kiểm thử về kích thước chuẩn `224x224` để phù hợp với định dạng ImageNet.
-- [x] Xây dựng `Data Generator` kết hợp kỹ thuật biến đổi ảnh ngẫu nhiên (lật, xoay, thu phóng) và `Mixup` để xử lý vấn đề mất cân bằng và thiếu hụt dữ liệu (~3000 ảnh).
+Toàn bộ ứng dụng (backend + frontend + training) nằm trong thư mục:
 
-### 🟡 Giai đoạn 2: Xây dựng & Huấn luyện Mô hình
-**Trạng thái:** ⏳ Đang thực hiện (In Progress)
-- [x] Khởi tạo kiến trúc `DenseNet-121` (Pre-trained trên ImageNet).
-- [x] Biên dịch mô hình với `Adam Optimizer` (Learning Rate: 0.00005) và hàm loss `Binary Crossentropy`.
-- [ ] Huấn luyện mô hình trong 15 epochs.
-- [ ] Tối ưu hóa ngưỡng phân loại (Best Threshold) dựa trên hệ số `Quadratic Weighted Kappa (QWK)` bằng thuật toán Nelder-Mead.
-
-### 🔴 Giai đoạn 3: Tích hợp, Đánh giá & Hoàn thiện
-**Trạng thái:** 🔴 Chưa bắt đầu (Pending)
-- [ ] Đánh giá độ chính xác (Accuracy) và độ nhạy (Sensitivity) trên tập Test ẩn.
-- [ ] Tích hợp mô hình vào ứng dụng trực quan, hỗ trợ chẩn đoán cho bác sĩ.
-- [ ] Kiểm thử toàn diện (Debug) và xử lý lỗi phát sinh.
-- [ ] Hoàn tất hồ sơ, viết báo cáo khóa luận chuẩn bị cho buổi bảo vệ.
+- `DR_Diagnosis_System/`
 
 ---
 
-## 2. GIỚI THIỆU & TỔNG QUAN (INTRODUCTION)
+## 📋 Mục lục
 
-Bệnh đái tháo đường và các biến chứng của nó đang là thách thức lớn đối với hệ thống y tế toàn cầu. Trong đó, bệnh võng mạc đái tháo đường là nguyên nhân hàng đầu gây mù lòa và suy giảm thị lực vĩnh viễn ở người trong độ tuổi lao động. 
-
-Tại các quốc gia đang phát triển như Việt Nam, việc thiếu hụt nhân lực y tế chuyên sâu về nhãn khoa tại các tuyến cơ sở khiến quy trình sàng lọc truyền thống (bác sĩ quan sát trực tiếp ảnh đáy mắt) gặp nhiều hạn chế. Nó không chỉ tốn thời gian mà còn phụ thuộc lớn vào kinh nghiệm chủ quan của bác sĩ, dễ làm mất "thời điểm vàng" điều trị. Dự án này được phát triển nhằm cung cấp một công cụ hỗ trợ chẩn đoán tự động bằng AI, mang lại kết quả nhanh chóng, chính xác và có khả năng triển khai rộng rãi.
+- [Giới thiệu](#giới-thiệu)
+- [Tính năng](#tính-năng)
+- [Kiến trúc & pipeline](#kiến-trúc--pipeline)
+- [Công nghệ sử dụng](#công-nghệ-sử-dụng)
+- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
+- [Bắt đầu nhanh](#bắt-đầu-nhanh)
+- [Demo online (Hugging Face Spaces)](#demo-online-hugging-face-spaces)
+- [Cấu hình](#cấu-hình)
+- [Sử dụng](#sử-dụng)
+- [API Reference](#api-reference)
+- [Huấn luyện mô hình](#huấn-luyện-mô-hình)
+- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+- [Tác giả](#tác-giả)
 
 ---
-## 3. SO SÁNH VỚI CÁC NGHIÊN CỨU TRƯỚC (COMPARISON)
-Dựa trên các nghiên cứu khoa học tiên tiến được tham khảo, dưới đây là bảng so sánh phương pháp và hiệu suất của dự án đề xuất so với 2 nghiên cứu quốc tế nổi bật:
-| Tiêu chí | Nghiên cứu của A. Bilal et al. (2022) | Nghiên cứu của S. Toledo-Cortés et al. (2020) | Dự án hiện tại (APTOS DenseNet-121) |
-| :--- | :--- | :--- | :--- |
-| **Phương pháp nghiên cứu** | Trí tuệ nhân tạo dựa trên U-Net kết hợp Deep Learning. | Học sâu lai ghép kết hợp Quá trình Gaussian (Hybrid Deep Learning Gaussian Process). | Học chuyển giao (Transfer Learning) với DenseNet-121 kết hợp Threshold Optimization. |
-| **Mục tiêu chính** | Phát hiện tự động, khoanh vùng và phân loại cấp độ bệnh. | Chẩn đoán bệnh và lượng hóa độ không chắc chắn (Uncertainty Quantification). | Phân loại chính xác 5 cấp độ bệnh dựa trên việc cực đại hóa chỉ số QWK. |
-| **Độ chính xác / Khả năng** | Accuracy đạt mức cao (lên tới ~97% trên một số tập dữ liệu). | Đạt chỉ số AUC tốt (~0.948) và cảnh báo rủi ro khi mô hình dự đoán không chắc chắn. | Hoạt động ổn định trên tập dữ liệu nhỏ nhờ kỹ thuật Mixup sinh dữ liệu. |
-| **Độ nhạy (Sensitivity)** | Dao động rất tốt (>84%) trong việc nhận diện vi phình mạch máu. | Phụ thuộc vào ngưỡng tin cậy của Gaussian Process. | (Đang cập nhật chi tiết sau quá trình kiểm thử tập Test) |
+
+## Giới thiệu
+
+**Bệnh võng mạc đái tháo đường (Diabetic Retinopathy — DR)** là biến chứng nguy hiểm của bệnh tiểu đường. Dự án này xây dựng một **ứng dụng Web chạy hoàn toàn local** để:
+
+- Nhận ảnh đáy mắt (PNG/JPG/JPEG)
+- Tiền xử lý (crop viền đen → resize 224×224 → CLAHE trên LAB)
+- Chạy inference bằng **model Keras (.h5)** (pipeline hiện tại dùng chuẩn tiền xử lý của **DenseNet**)
+- Trả về: lớp dự đoán 0–4, phân phối xác suất 5 lớp, entropy, và chỉ số **uncertainty = 1 − max(probabilities)**
+
 ---
 
-## 4. PHƯƠNG PHÁP NGHIÊN CỨU (RESEARCH METHODOLOGY)
+## Tính năng
 
-### Bước 1: Tiền xử lý và Data Generator
-Giải thích: Thay đổi kích thước ảnh về chuẩn ImageNet và sử dụng Generator để tăng cường dữ liệu, kết hợp kỹ thuật Mixup giúp mô hình tổng quát hóa tốt hơn.
-```python
-# Cấu hình ImageDataGenerator để tăng cường dữ liệu
-from keras.preprocessing.image import ImageDataGenerator
+- 🔬 Phân loại 5 mức độ DR (0–4)
+- 🖼️ Tiền xử lý ảnh: crop viền đen, resize 224×224, CLAHE (LAB)
+- 📊 Trả về xác suất 5 lớp + entropy + chỉ số độ bất định
+- 🌐 Giao diện Web: kéo-thả ảnh, preview, thanh xác suất, cảnh báo bất định
+- 🖨️ In báo cáo trực tiếp từ trình duyệt
+- 🕑 Lưu lịch sử 10 lần chẩn đoán gần nhất (localStorage)
+- 🧪 Mock mode để test UI/API khi chưa có model thật
 
-datagen = ImageDataGenerator(
-    zoom_range=0.15,
-    fill_mode='constant',
-    cval=0.,
-    horizontal_flip=True,
-    vertical_flip=True,
-)
+## Kiến trúc & pipeline
+
+```text
+Ảnh đáy mắt (PNG/JPG/JPEG)
+                                                ↓
+Frontend (HTML/CSS/JS)
+                                                ↓  POST /api/predict (multipart/form-data)
+Backend Flask
+                                                ↓
+Tiền xử lý (OpenCV): crop → resize 224×224 → CLAHE
+                                                ↓
+Model Keras (.h5) inference
+                                                ↓
+JSON: predicted_class + probabilities + uncertainty + entropy + ảnh CLAHE (base64 JPG)
 ```
-### Bước 2: Khởi tạo mô hình DenseNet-121
-Giải thích: Sử dụng phương pháp Học chuyển giao (Transfer Learning) với mạng DenseNet-121 mạnh mẽ, thiết lập đầu ra Multilabel để dự đoán 5 cấp độ của bệnh.
-```python
-from keras.applications import DenseNet121
-from keras.models import Sequential
-from keras.layers import Dense, GlobalAveragePooling2D, Dropout
 
-# Tải mô hình Pre-trained, loại bỏ lớp phân loại trên cùng
-densenet = DenseNet121(
-    weights='imagenet',
-    include_top=False,
-    input_shape=(224, 224, 3)
-)
+## Công nghệ sử dụng
 
-model = Sequential()
-model.add(densenet)
-model.add(GlobalAveragePooling2D())
-model.add(Dropout(0.5))
-model.add(Dense(5, activation='sigmoid')) # Đầu ra Multilabel cho 5 cấp độ bệnh
+Phần này được viết theo đúng code hiện có trong dự án:
+
+### Backend (API + serve UI)
+
+- **Python 3.10/3.11**
+- **Flask**: serve `frontend/index.html` ở `/` và cung cấp API ở `/api/*`
+- **Flask-CORS**: bật CORS cho `/api/*`
+- **Werkzeug**: `secure_filename` cho file upload (dependency đi kèm Flask)
+
+### AI / Deep Learning
+
+- **TensorFlow + Keras**: load model `backend/models/dr_classifier.h5` và chạy inference
+- **DenseNet preprocess_input**: dùng chuẩn tiền xử lý DenseNet cho ảnh đầu vào (trong `backend/utils/image_processing.py`)
+
+### Xử lý ảnh
+
+- **OpenCV (opencv-python-headless)**: đọc ảnh, crop viền đen, resize, CLAHE trên LAB
+- **NumPy**: xử lý tensor và hậu xử lý output
+
+### Frontend
+
+- **HTML5 / CSS3 / Vanilla JavaScript**
+- Fetch API gọi `/api/health` và `/api/predict`
+- localStorage lưu lịch sử chẩn đoán
+
+### Đóng gói / triển khai
+
+- **Docker** (Dockerfile tại thư mục gốc `DR_Diagnosis_System/`) — cấu hình port **7860** (phù hợp Hugging Face Spaces)
+
+## Yêu cầu hệ thống
+
+- **Python 3.10 hoặc 3.11** (TensorFlow thường không hỗ trợ tốt Python 3.12+)
+- Trình duyệt hiện đại: Chrome/Edge/Firefox
+
+Khuyến nghị khi chạy inference:
+
+- RAM 4GB+ (tùy model)
+- CPU chạy được; GPU không bắt buộc khi suy luận
+
+## Bắt đầu nhanh
+
+### 0) Đi vào thư mục dự án
+
+```bash
+cd DR_Diagnosis_System
 ```
-### Bước 3: Tối ưu hóa ngưỡng bằng Quadratic Weighted Kappa (QWK)
-Giải thích: Thay vì dùng ngưỡng cắt 0.5 mặc định, dự án sử dụng thuật toán Nelder-Mead của scipy.optimize để tìm ngưỡng cắt (threshold) tối ưu, giúp cực đại hóa chỉ số QWK - thước đo chính của bài toán.
-```python
-import scipy.optimize
-from sklearn.metrics import cohen_kappa_score
 
-def compute_score_inv(threshold):
-    y1 = y_val_pred > threshold
-    y1 = y1.astype(int).sum(axis=1) - 1
-    y2 = y_val.sum(axis=1) - 1
-    score = cohen_kappa_score(y1, y2, weights='quadratic')
-    return 1 - score
+### 1) Tạo môi trường ảo và cài thư viện
 
-# Tìm ngưỡng tối ưu
-simplex = scipy.optimize.minimize(
-    compute_score_inv, 0.5, method='nelder-mead'
-)
-best_threshold = simplex['x'][0]
-print(f"✅ Ngưỡng tối ưu hóa QWK: {best_threshold}")
+```bash
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+pip install -r backend/requirements.txt
 ```
+
+### 2) Đặt file model
+
+Copy model đã huấn luyện vào đúng đường dẫn:
+
+```text
+DR_Diagnosis_System/backend/models/dr_classifier.h5
+```
+
+Nếu chưa có model, bạn vẫn có thể bật **mock mode** để test giao diện.
+
+### 3) Chạy server
+
+Chạy theo 1 trong 2 cách sau:
+
+```bash
+# Cách 1: chạy từ thư mục DR_Diagnosis_System (khuyến nghị)
+python -m backend.app
+```
+
+```bash
+# Cách 2: chạy trong thư mục backend/
+cd backend
+python app.py
+```
+
+Server mặc định chạy tại:
+
+```text
+http://127.0.0.1:7860
+```
+
+### 4) Mở giao diện
+
+Truy cập:
+
+```text
+http://127.0.0.1:7860/
+```
+
+### (Tuỳ chọn) Chạy bằng Docker
+
+```bash
+cd DR_Diagnosis_System
+docker build -t dr-diagnosis-system .
+docker run --rm -p 7860:7860 dr-diagnosis-system
+```
+
+## Demo online (Hugging Face Spaces)
+
+Bạn có thể trải nghiệm bản online tại:
+
+[thanhnguyen-nguyen/dr-diagnosis-system](https://huggingface.co/spaces/thanhnguyen-nguyen/dr-diagnosis-system)
+
+Cách dùng nhanh:
+
+1. Mở link Spaces
+2. Upload/kéo-thả ảnh đáy mắt (PNG/JPG/JPEG)
+3. Chẩn đoán và xem: grade dự đoán, phân phối xác suất 5 lớp, uncertainty/entropy và ảnh sau xử lý CLAHE
+
+Lưu ý:
+
+- Nếu Spaces đang “sleep” thì có thể mất vài giây khi lần đầu load lại.
+- Kết quả chỉ mang tính chất học thuật/tham khảo, không thay thế chẩn đoán y khoa.
+
+## Cấu hình
+
+### Biến môi trường
+
+| Biến            | Giá trị   | Ý nghĩa                                 |
+| --------------- | --------- | --------------------------------------- |
+| `DR_ALLOW_MOCK` | `1` / `0` | Bật chế độ mock khi model chưa sẵn sàng |
+
+### Bật mock mode
+
+```bash
+# Windows PowerShell
+$env:DR_ALLOW_MOCK="1"
+python -m backend.app
+```
+
+```bash
+# Windows CMD
+set DR_ALLOW_MOCK=1
+python -m backend.app
+```
+
+Khi mock bật, `/api/predict` sẽ trả JSON mẫu đúng format để UI render.
+
+## Sử dụng
+
+1. Mở `http://127.0.0.1:7860/`
+2. Kéo & thả ảnh đáy mắt (PNG/JPG/JPEG, tối đa 10MB)
+3. Nhấn **Chẩn đoán ngay**
+4. Xem kết quả: grade dự đoán, phân phối xác suất, thanh bất định, ảnh sau CLAHE
+5. Nhấn **In báo cáo** nếu cần
+
+## API Reference
+
+Base URL (local):
+
+```text
+http://127.0.0.1:7860
+```
+
+### `GET /`
+
+Serve giao diện Web (`frontend/index.html`).
+
+### `GET /api/health`
+
+Trả trạng thái model.
+
+#### 200 OK
+
+```json
+{
+  "ready": true,
+  "mock_enabled": false
+}
+```
+
+#### 503 Service Unavailable (thiếu model / lỗi load)
+
+```json
+{
+  "ready": false,
+  "error": "...",
+  "mock_enabled": false
+}
+```
+
+### `POST /api/predict`
+
+Upload ảnh và nhận kết quả.
+
+**Request**: `multipart/form-data`
+
+| Field  | Type | Mô tả                     |
+| ------ | ---- | ------------------------- |
+| `file` | file | PNG/JPG/JPEG, tối đa 10MB |
+
+#### Response 200 OK
+
+```json
+{
+  "predicted_class": 2,
+  "diagnosis": "Mức 2 - Tiền tăng sinh nhẹ/trung bình",
+  "probabilities": [0.05, 0.1, 0.6, 0.2, 0.05],
+  "uncertainty": 0.4,
+  "entropy": 0.0,
+  "is_high_uncertainty": false,
+  "processed_image_base64_jpg": "<base64>",
+  "heatmap_url": ""
+}
+```
+
+Ghi chú:
+
+- `uncertainty = 1 - max(probabilities)`
+- `entropy` hiện tính theo log tự nhiên (natural log)
+
+## Huấn luyện mô hình
+
+Notebook huấn luyện nằm ở:
+
+- `DR_Diagnosis_System/training/train_model_colab.ipynb`
+
+Sau khi train xong, export model Keras `.h5` và đặt vào:
+
+- `DR_Diagnosis_System/backend/models/dr_classifier.h5`
+
+## Cấu trúc thư mục
+
+```text
+DR_Diagnosis_System/
+├── backend/                       # Backend Flask + suy luận AI
+│   ├── app.py                     # Entry server: serve UI + API (/api/health, /api/predict)
+│   ├── requirements.txt           # Thư viện Python cho backend
+│   ├── models/                    # Nơi đặt artifact mô hình
+│   │   └── dr_classifier.h5        # Model Keras đã train (bắt buộc khi chạy inference thật)
+│   ├── uploads/                   # Ảnh upload tạm khi gọi /api/predict
+│   └── utils/                     # Các module xử lý ảnh & inference
+│       ├── image_processing.py     # Crop viền đen + resize 224 + CLAHE + DenseNet preprocess_input
+│       └── ai_inference.py         # Load model + predict + trả về probabilities/uncertainty/entropy
+├── frontend/                      # Giao diện web (HTML/CSS/JS)
+│   ├── index.html                 # UI: upload ảnh, hiển thị kết quả, in báo cáo
+│   ├── css/
+│   │   └── style.css              # Style giao diện
+│   └── js/
+│       └── script.js              # Logic gọi API, render kết quả, lưu history localStorage
+├── training/                      # Notebook/flow huấn luyện
+│   └── train_model_colab.ipynb    # Notebook train (Colab/Kaggle), export .h5
+└── Dockerfile                     # Docker hoá backend + frontend (port 7860)
+```
+
+Ghi chú:
+
+- Repo có thêm thư mục `DR_Diagnosis_System/dr-diagnosis-system/` (bản copy cùng mã nguồn) phục vụ đóng gói/triển khai; phần chạy chính là `DR_Diagnosis_System/`.
+- Khi chạy local, bạn chỉ cần quan tâm các thư mục: `backend/`, `frontend/`, và model `.h5` trong `backend/models/`.
+
+## Tác giả
+
+| Vai trò              | Thông tin                |
+| -------------------- | ------------------------ |
+| Sinh viên thực hiện  | Nguyễn Thành Nguyên      |
+| Mã sinh viên         | 225255                   |
+| Lớp                  | DH22TIN03                |
+| Giảng viên hướng dẫn | Trần Văn Thiện           |
+| Đơn vị               | Khoa Công Nghệ Thông Tin |
