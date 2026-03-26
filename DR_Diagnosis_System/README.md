@@ -64,7 +64,6 @@ Hệ thống hỗ trợ chẩn đoán và **phân loại 5 mức độ bệnh v�
 - 🖼️ Tiền xử lý ảnh: crop viền đen, resize 224×224, CLAHE (LAB)
 - 📊 Trả về xác suất 5 lớp + entropy + chỉ số độ bất định
 - 🌐 Giao diện Web: kéo-thả ảnh, preview, thanh xác suất, cảnh báo bất định
-- 🖨️ In báo cáo trực tiếp từ trình duyệt
 - 🕑 Lưu lịch sử 10 lần chẩn đoán gần nhất (localStorage)
 - 🧪 Mock mode để test UI/API khi chưa có model thật
 

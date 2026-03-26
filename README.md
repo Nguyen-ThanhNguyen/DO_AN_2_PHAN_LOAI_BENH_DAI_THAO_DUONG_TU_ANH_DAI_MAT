@@ -55,7 +55,6 @@ Toàn bộ ứng dụng (backend + frontend + training) nằm trong thư mục:
 - 🖼️ Tiền xử lý ảnh: crop viền đen, resize 224×224, CLAHE (LAB)
 - 📊 Trả về xác suất 5 lớp + entropy + chỉ số độ bất định
 - 🌐 Giao diện Web: kéo-thả ảnh, preview, thanh xác suất, cảnh báo bất định
-- 🖨️ In báo cáo trực tiếp từ trình duyệt
 - 🕑 Lưu lịch sử 10 lần chẩn đoán gần nhất (localStorage)
 - 🧪 Mock mode để test UI/API khi chưa có model thật
 
